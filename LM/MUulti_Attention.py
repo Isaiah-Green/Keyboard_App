@@ -60,7 +60,7 @@ num_heads = 2
 qkv_bias = False
 mha = Attention(d_in, d_out, context_legnth, num_heads , dropout, qkv_bias)
 c_v = mha(batch)
-print(c_v)
+print(c_v) ok
 ''' 
 
 
