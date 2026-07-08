@@ -43,7 +43,7 @@ class TransformerBlock(nn.Module):
         
 '''
 Testing
-'''
+
 cfg = {
     "vocab_size": 50257,
     "context_length": 1024,
@@ -56,4 +56,4 @@ cfg = {
 random = torch.rand(2 , 6, 768)
 block  = TransformerBlock(cfg)
 print(block(random))
-
+'''
