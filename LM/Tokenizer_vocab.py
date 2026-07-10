@@ -13,6 +13,8 @@ class Tokenizier:
             return False
         else:
             return True
+    '''
+    Functions for special charcaters (uneeded right now)
     def special_encoding(self, text):
         ##using byte pair encoding to add special charcaters(non stadard english) to the vocab_list
         self.vocab_list.update({text : len(self.vocab_list) + 1})
@@ -35,6 +37,7 @@ class Tokenizier:
                     self.token_list.update({self.tokenizer.encode(text[i])[0]: len(self.token_list) + 1})  
         new = list(self.token_list.keys())  
         return new 
+    '''
     def decodes(self, text):
         final = []
         for item in text:
