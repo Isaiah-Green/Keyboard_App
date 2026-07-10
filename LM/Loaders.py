@@ -27,7 +27,7 @@ inputs , targets = DataSet(sample_text, t,context_length)
 print(f" {inputs} \n {targets}")
 '''
 
-def Dataloader(text,batch_size=4,max_size= 15, num_workers=0, shuffle=True, drop_last=True, stride=5):
+def Dataloader(text,batch_size=4,max_size= 10, num_workers=0, shuffle=True, drop_last=True, stride=5):
     tokenizer = Tokenizier()
     data_set = dataset(text, tokenizer,max_size, stride)
     data_loader = DataLoader(data_set , batch_size=batch_size, shuffle=shuffle, drop_last=drop_last,num_workers=num_workers)
