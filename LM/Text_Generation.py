@@ -30,15 +30,16 @@ def Generate_output_highest(model,idx, max_new_tokens, context_size):
 def Generate_output_and_print(model, tokenizer, start_context, device):
     model.eval()
     context_size = model.pos_embedding.weight.shape[0]
+    '''
     if "CFUI" in start_context:
         encoded = torch.tensor(tokenizer.special_encode(start_context)).unsqueeze(0)
     else:
-        encoded = torch.tensor(tokenizer.encode(start_context)).unsqueeze(0)
-        print(encoded)
+    '''
+    encoded = torch.tensor(tokenizer.encode(start_context)).unsqueeze(0)
     with torch.no_grad():
         token_ids = Generate_output_highest(model,idx=encoded,max_new_tokens=1, context_size=context_size)
     decode = To_ouput(tokenizer, token_ids)
-    print(decode)
+    print(decode) # decode returns a list already
     return decode 
 '''
 Testing
