@@ -1,8 +1,8 @@
 import torch
 from Tokenizer_vocab import Tokenizier
 from Model import Model
-
-
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
 def To_token(tokenizer, input):
     if input[:3] == "CFUI":
         token = tokenizer.special_encode(input)
@@ -39,7 +39,7 @@ def Generate_output_and_print(model, tokenizer, start_context, device):
     with torch.no_grad():
         token_ids = Generate_output_highest(model,idx=encoded,max_new_tokens=1, context_size=context_size)
     decode = To_ouput(tokenizer, token_ids)
-    print(decode) # decode returns a list already
+    print(decode) #decode returns a string
     return decode 
 '''
 Testing
@@ -55,7 +55,7 @@ cfg = {
 }
 model = Model(cfg)
 tokenizer = Tokenizier()
-start_context = "The Wind is Nice"
+start_context = "The こんにちは is Nice"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 to_token = To_token(tokenizer, start_context)

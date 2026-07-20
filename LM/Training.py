@@ -4,7 +4,7 @@ from Text_Generation import To_token,To_ouput,Generate_output_and_print,Generate
 from Loss import calculate_loss, calc_loss_batch
 from Loaders import Dataloader
 import torch
-
+import random
 def Train_Model_on_input(model, train_loader, value_loader, optimizer, device, tokenizer, num_epochs, eval_iter, eval_freq,start_context):
     train_loss , val_loss,track_tokens_seen = [],[],[]
     tokens_seen,global_step = 0,-1
@@ -27,13 +27,16 @@ def Train_Model_on_input(model, train_loader, value_loader, optimizer, device, t
                 train_loss.append(train_losses)
                 val_loss.append(val_losses)
                 track_tokens_seen.append(tokens_seen)
+                start_context = ["Hello, IM feeling a bit ", "Do you want to come with", "No way!, i cant beleive you", " Sorry i was in the "]
+                t = random.randint(0,3)
                 print(f"{epoch + 1} (Step {global_step:06d}):" f"Train loss {train_losses:.3f}, Val loss {val_losses:.3f}")
             
-            Generate_output_and_print(model,tokenizer,start_context,device)
+            Generate_output_and_print(model,tokenizer,start_context[t],device)
 
 '''
 Testing 
 '''
+import numpy as np
 def evaluate_model(model, train_loader, val_loader, device, eval_iter):
     model.eval() # sets model to evaluation mode (good pratice)
     with torch.no_grad():
@@ -42,13 +45,9 @@ def evaluate_model(model, train_loader, val_loader, device, eval_iter):
         model.train() # puts back in training mode
         return train_loss, val_loss
 
-
 '''
 Testing 
 '''
-import os
-print("Python thinks it is here:", os.getcwd())
-print("Files Python can actually see here:", os.listdir('.'))
 cfg = {
     "vocab_size": 50257,
     "context_length": 1024,
@@ -70,9 +69,10 @@ val_loader = Dataloader(val_data)
 
 model = Model(cfg)
 tokenizer = Tokenizier()
-start_context = "The Wind is Nice"
+start_context = ["Hello, IM feeling a bit ", "Do you want to come with", "No way!, i cant beleive you", " Sorry i was in the "]
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 optimizer = torch.optim.AdamW(model.parameters(), lr=0.005,weight_decay=0.1)
 num_epochs = 10
-train_loss, val_loss, tokens_seen = Train_Model_on_input(model,train_loader,val_loader,optimizer,device,tokenizer,num_epochs,eval_iter,eval_freq,start_context)
+t = random.randint(0,3)
+train_loss, val_loss, tokens_seen = Train_Model_on_input(model,train_loader,val_loader,optimizer,device,tokenizer,num_epochs,eval_iter,eval_freq,start_context[t])

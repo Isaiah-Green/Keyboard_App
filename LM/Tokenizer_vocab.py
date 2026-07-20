@@ -1,5 +1,5 @@
 import tiktoken
-
+import torch
 class Tokenizier:
     def __init__(self):
         self.tokenizer = tiktoken.get_encoding("gpt2") # tokenizer
@@ -39,15 +39,12 @@ class Tokenizier:
         return new 
     '''
     def decodes(self, text):
-        final = []
-        for item in text:
-            if isinstance(item, int):
-                t = self.tokenizer.decode([item])
-                final.append(t)
-            if isinstance(item, bytes):
-                t = item.decode("utf-8")
-                final.append(t)
-        return final
+        if hasattr(text, "tolist"):
+            text = text.tolist()
+        elif isinstance(text, torch.Tensor): 
+            text = text.cpu().numpy().tolist()
+        token_ids = [item for item in text if isinstance(item, int)]
+        return self.tokenizer.decode(token_ids)
     def encode(self,text):
         return self.tokenizer.encode(text)
     def get_vocab_length(self):

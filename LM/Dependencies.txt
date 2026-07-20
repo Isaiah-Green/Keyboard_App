@@ -1,2 +1,5 @@
 tiktoken 
 torch
+numpy
+sys
+random

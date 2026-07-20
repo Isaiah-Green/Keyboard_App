@@ -9,8 +9,8 @@ class dataset(Dataset):
         tokens = tokenizer.encode(text) 
         ######
         for i in range(0, len(tokens) - max_length, stride):
-            inputs = tokens[i: stride + i]
-            targets = tokens[i+1: stride + 1 + i]
+            inputs = tokens[i: max_length + i]
+            targets = tokens[i+1: max_length + 1 + i]
             self.inputs.append(torch.tensor(inputs))
             self.targets.append(torch.tensor(targets))
     def __len__(self):
