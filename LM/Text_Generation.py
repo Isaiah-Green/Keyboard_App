@@ -24,8 +24,10 @@ def Generate_output_highest(model,idx, max_new_tokens, context_size):
         probability = torch.softmax(logits, dim=-1)
         # use argmax to get highest index value
         idx_next = torch.argmax(probability, dim=-1, keepdim=True)
+        top_k_prob, top_k_index = torch.topk(probability, k=3, dim=-1)
         idx = torch.cat((idx, idx_next), dim=-1)
-    return idx
+
+    return idx, top_k_index
 
 def Generate_output_and_print(model, tokenizer, start_context, device):
     model.eval()
@@ -37,10 +39,12 @@ def Generate_output_and_print(model, tokenizer, start_context, device):
     '''
     encoded = torch.tensor(tokenizer.encode(start_context)).unsqueeze(0)
     with torch.no_grad():
-        token_ids = Generate_output_highest(model,idx=encoded,max_new_tokens=1, context_size=context_size)
+        token_ids,top_k = Generate_output_highest(model,idx=encoded,max_new_tokens=1, context_size=context_size)
+    #top_k = top_k.unsqueeze(0)
+    decoded_top_k = To_ouput(tokenizer, top_k[0])
     decode = To_ouput(tokenizer, token_ids)
-    print(decode) #decode returns a string
-    return decode 
+    print(f"Output Message: {decode} ::::: Top K Results: {decoded_top_k}") #decode returns a string
+    return decode, decoded_top_k
 '''
 Testing
 

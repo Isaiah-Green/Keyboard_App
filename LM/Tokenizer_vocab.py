@@ -2,24 +2,38 @@ import tiktoken
 import torch
 class Tokenizier:
     def __init__(self):
-        self.tokenizer = tiktoken.get_encoding("gpt2") # tokenizer
-        self.vocab_list = {} # dictionary mapping words to an int number or id
-        self.token_list = {} # same as dictionary but with the words encoded and mapped
+        self.tokenizer = tiktoken.get_encoding("cl100k_base") # tokenizer
         self.special_list = {} # hold all unique charcaters that arent letters or numbers 
-    def is_english(self,text):
-        try:
-            text.encode(encoding='utf-8').decode('ascii')
-        except UnicodeDecodeError:
+        self.base_name = "Custom_Encoding"
+        self.encoder = None
+        self.rebuild()
+    def is_image(self,text):
+        if "CFUI" in text:
             return False
         else:
             return True
-    '''
-    Functions for special charcaters (uneeded right now)
+    
+    def rebuild(self): #to rebuild encoding for added special tokens 
+        all_specials = {
+            **self.tokenizer._special_tokens,
+            **self.special_list
+        }
+        self.encoder = tiktoken.Encoding(
+            name = f"{self.base_name}_dynamic",
+            pat_str = self.tokenizer._pat_str,
+            mergeable_ranks=self.tokenizer._mergeable_ranks,
+            special_tokens=all_specials
+        )
+
     def special_encoding(self, text):
-        ##using byte pair encoding to add special charcaters(non stadard english) to the vocab_list
-        self.vocab_list.update({text : len(self.vocab_list) + 1})
-        self.token_list.update({text.encode() : len(self.token_list) + 1})
-        return 
+        if text in self.tokenizer._special_tokens or text in self.special_list:
+            return 
+        else:
+            next_id = self.tokenizer.n_vocab + len(self.special_list)
+            self.special_list[text] = next_id
+        self.rebuild()
+        self.encoder.encode(text, allowed_specials=all)
+    '''
     def encode_and_add(self, text):
         ### split and store raw text in vocab
         text = text.split()
@@ -44,24 +58,30 @@ class Tokenizier:
         elif isinstance(text, torch.Tensor): 
             text = text.cpu().numpy().tolist()
         token_ids = [item for item in text if isinstance(item, int)]
-        return self.tokenizer.decode(token_ids)
-    def encode(self,text):
-        return self.tokenizer.encode(text)
+        return self.encoder.decode(token_ids)
+    def encode(self, text, allowed_special="all"):   
+        if isinstance(text, torch.Tensor):
+            text = text.cpu().numpy().tolist()  
+        if isinstance(text, list):
+            for word in text:
+                if hasattr(self, "is_image") and self.is_image(word):
+                    self.special_encoding(word)
+            text = " ".join(text)
+        return self.encoder.encode(text, allowed_special=allowed_special)
     def get_vocab_length(self):
         return len(self.vocab_list)
     def get_token_list_length(self):
         return len(self.token_list)
 '''
 Testing 
+
 import sys
 import io
 sys.stdout  = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 token = Tokenizier()
-sample_text = "Thisw is a 테스트용 텍스트 bu"
+sample_text = "This is a 테스트용 텍스트 but"
 sample_text_2 = " i hate everything here lmao"
-print(token.encode_and_add(sample_text))      
-print(token.decodes(token.encode_and_add(sample_text))) 
-
-'''  
-
+print(token.encode(sample_text))      
+print(token.decodes(token.encode(sample_text))) 
+'''
 

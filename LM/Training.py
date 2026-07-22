@@ -49,7 +49,7 @@ def evaluate_model(model, train_loader, val_loader, device, eval_iter):
 Testing 
 '''
 cfg = {
-    "vocab_size": 50257,
+    "vocab_size": 200000,
     "context_length": 1024,
     "emb_dim": 768,
     "num_heads": 12,
